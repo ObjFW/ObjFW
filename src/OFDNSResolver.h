@@ -172,7 +172,7 @@ OF_SUBCLASSING_RESTRICTED
 /**
  * @brief The local domain.
  */
-@property OF_NULLABLE_PROPERTY (readonly, nonatomic) OFString *localDomain;
+@property (readonly, nonatomic) OFString *localDomain;
 
 /**
  * @brief The domains to search for queries for short names.

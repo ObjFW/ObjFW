@@ -104,8 +104,8 @@ domainFromHostname(OFString *hostname)
 {
 	OFString *ret;
 
-	if (hostname == nil)
-		return nil;
+	if (hostname.length == 0)
+		return @"";
 
 	@try {
 		OFSocketAddressParseIP(hostname, 0);
@@ -114,7 +114,7 @@ domainFromHostname(OFString *hostname)
 		 * If we are still here, the host name is a valid IP address.
 		 * We can't use that as local domain.
 		 */
-		ret = nil;
+		ret = @"";
 	} @catch (OFInvalidFormatException *e) {
 		/* Not an IP address -> we can use it if it contains a dot. */
 		OFRange range = [hostname rangeOfString: @"."];
@@ -122,7 +122,7 @@ domainFromHostname(OFString *hostname)
 		if (range.location != OFNotFound)
 			ret = [hostname substringFromIndex: range.location + 1];
 		else
-			ret = nil;
+			ret = @"";
 	}
 
 	return ret;
@@ -136,7 +136,7 @@ obtainHostname(void)
 	char hostname[HOST_NAME_MAX + 1];
 
 	if (gethostname(hostname, HOST_NAME_MAX + 1) != 0)
-		return nil;
+		return @"";
 
 	return [OFString stringWithCString: hostname
 				  encoding: [OFLocale encoding]];
@@ -163,28 +163,28 @@ arexxCommand(const char *port, const char *command)
 	struct RexxMsg *msg = NULL;
 
 	if ((RexxSysBase = OpenLibrary("rexxsyslib.library", 36)) == NULL)
-		return nil;
+		return @"";
 
 	@try {
 		struct MsgPort *rexxPort;
 
 		if ((replyPort = CreateMsgPort()) == NULL)
-			return nil;
+			return @"";
 
 		if ((msg = CreateRexxMsg(replyPort, NULL, port)) == NULL)
-			return nil;
+			return @"";
 
 		msg->rm_Action = RXCOMM | RXFF_RESULT;
 
 		if ((msg->rm_Args[0] = (char *)CreateArgstring(
 		    command, strlen(command))) == NULL)
-			return nil;
+			return @"";
 
 		Forbid();
 
 		if ((rexxPort = FindPort(port)) == NULL) {
 			Permit();
-			return nil;
+			return @"";
 		}
 
 		PutMsg(rexxPort, &msg->rm_Node);
@@ -193,7 +193,7 @@ arexxCommand(const char *port, const char *command)
 		GetMsg(replyPort);
 
 		if (msg->rm_Result1 != RC_OK || msg->rm_Result2 == 0)
-			return nil;
+			return @"";
 
 		return [OFString stringWithCString: (char *)msg->rm_Result2
 					  encoding: [OFLocale encoding]];
@@ -218,7 +218,7 @@ static OFArray OF_GENERIC(OFString *) *
 parseNetStackArray(OFString *string)
 {
 	if (![string hasPrefix: @"["] || ![string hasSuffix: @"]"])
-		return nil;
+		return [OFArray array];
 
 	string = [string substringWithRange: OFMakeRange(1, string.length - 2)];
 
@@ -243,6 +243,23 @@ parseNetStackArray(OFString *string)
 }
 #endif
 
+- (instancetype)init
+{
+	self = [super init];
+
+	@try {
+		_staticHosts = [[OFMutableDictionary alloc] init];
+		_nameServers = [[OFMutableArray alloc] init];
+		_localDomain = @"";
+		_searchDomains = [[OFMutableArray alloc] init];
+	} @catch (id e) {
+		objc_release(self);
+		@throw e;
+	}
+
+	return self;
+}
+
 - (void)dealloc
 {
 	objc_release(_staticHosts);
@@ -259,10 +276,26 @@ parseNetStackArray(OFString *string)
 	OFDNSResolverSettings *copy = [[OFDNSResolverSettings alloc] init];
 
 	@try {
-		copy->_staticHosts = [_staticHosts copy];
-		copy->_nameServers = [_nameServers copy];
+		void *pool = objc_autoreleasePoolPush();
+
+		[copy->_staticHosts removeAllObjects];
+
+		for (OFString *key in _staticHosts) {
+			OFMutableArray *addresses = objc_autorelease(
+			    [[_staticHosts objectForKey: key] mutableCopy]);
+			[copy->_staticHosts setObject: addresses forKey: key];
+		}
+
+		[copy->_nameServers removeAllObjects];
+		[copy->_nameServers addObjectsFromArray: _nameServers];
+
+		objc_release(copy->_localDomain);
+		copy->_localDomain = @"";
 		copy->_localDomain = [_localDomain copy];
-		copy->_searchDomains = [_searchDomains copy];
+
+		[copy->_searchDomains removeAllObjects];
+		[copy->_searchDomains addObjectsFromArray: _searchDomains];
+
 		copy->_timeout = _timeout;
 		copy->_maxAttempts = _maxAttempts;
 		copy->_minNumberOfDotsInAbsoluteName =
@@ -270,6 +303,8 @@ parseNetStackArray(OFString *string)
 		copy->_forcesTCP = _forcesTCP;
 		copy->_configReloadInterval = _configReloadInterval;
 		copy->_lastConfigReload = [_lastConfigReload copy];
+
+		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
 		objc_release(copy);
 		@throw e;
@@ -280,17 +315,13 @@ parseNetStackArray(OFString *string)
 
 - (void)setDefaults
 {
-	objc_release(_staticHosts);
-	_staticHosts = nil;
-
-	objc_release(_nameServers);
-	_nameServers = nil;
+	[_staticHosts removeAllObjects];
+	[_nameServers removeAllObjects];
 
 	objc_release(_localDomain);
-	_localDomain = nil;
+	_localDomain = @"";
 
-	objc_release(_searchDomains);
-	_searchDomains = nil;
+	[_searchDomains removeAllObjects];
 
 	_timeout = 2;
 	_maxAttempts = 3;
@@ -311,60 +342,48 @@ parseNetStackArray(OFString *string)
 	    [OFCharacterSet whitespaceCharacterSet];
 	OFCharacterSet *commentCharacters =
 	    [OFCharacterSet characterSetWithCharactersInString: @"#;"];
-	OFMutableDictionary *staticHosts;
-	OFFile *file;
-	OFString *line;
 
+	OFFile *file;
 	@try {
 		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
-
 	file.encoding = [OFLocale encoding];
 
-	staticHosts = [OFMutableDictionary dictionary];
-
+	OFString *line;
 	while ((line = [file readLine]) != nil) {
-		OFArray *components, *hosts;
-		OFRange range;
-		OFString *address;
-
-		range = [line rangeOfCharacterFromSet: commentCharacters];
+		OFRange range =
+		    [line rangeOfCharacterFromSet: commentCharacters];
 		if (range.location != OFNotFound)
 			line = [line substringToIndex: range.location];
 
-		components = [line
+		OFArray *components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
 		    options: OFStringSkipEmptyComponents];
 
 		if (components.count < 2)
 			continue;
 
-		address = components.firstObject;
-		hosts = [components objectsInRange:
+		OFString *address = components.firstObject;
+		OFArray *hosts = [components objectsInRange:
 		    OFMakeRange(1, components.count - 1)];
 
 		for (OFString *host in hosts) {
-			OFMutableArray *addresses;
-
 			host = host.lowercaseString;
-			addresses = [staticHosts objectForKey: host];
+			OFMutableArray *addresses =
+			    [_staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
-				[staticHosts setObject: addresses forKey: host];
+				[_staticHosts setObject: addresses
+						 forKey: host];
 			}
 
 			[addresses addObject: address];
 		}
 	}
-	for (OFMutableArray *addresses in [staticHosts objectEnumerator])
-		[addresses makeImmutable];
-
-	[staticHosts makeImmutable];
-	_staticHosts = [staticHosts copy];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -399,34 +418,26 @@ parseNetStackArray(OFString *string)
 	    [OFCharacterSet whitespaceCharacterSet];
 	OFCharacterSet *commentCharacters = [OFCharacterSet
 	    characterSetWithCharactersInString: @"#;"];
-	OFMutableArray *nameServers =
-	    objc_autorelease([_nameServers mutableCopy]);
-	OFFile *file;
-	OFString *line;
 
+	OFFile *file;
 	@try {
 		file = [OFFile fileWithPath: path mode: @"r"];
 	} @catch (OFOpenItemFailedException *e) {
 		objc_autoreleasePoolPop(pool);
 		return;
 	}
-
 	file.encoding = [OFLocale encoding];
 
-	if (nameServers == nil)
-		nameServers = [OFMutableArray array];
-
+	OFString *line;
 	while ((line = [file readLine]) != nil) {
 		void *pool2 = objc_autoreleasePoolPush();
-		OFRange range;
-		OFArray *components, *arguments;
-		OFString *option;
 
-		range = [line rangeOfCharacterFromSet: commentCharacters];
+		OFRange range =
+		    [line rangeOfCharacterFromSet: commentCharacters];
 		if (range.location != OFNotFound)
 			line = [line substringToIndex: range.location];
 
-		components = [line
+		OFArray *components = [line
 		    componentsSeparatedByCharactersInSet: whitespaceCharacterSet
 		    options: OFStringSkipEmptyComponents];
 
@@ -435,8 +446,8 @@ parseNetStackArray(OFString *string)
 			continue;
 		}
 
-		option = [components.firstObject lowercaseString];
-		arguments = [components objectsInRange:
+		OFString *option = [components.firstObject lowercaseString];
+		OFArray *arguments = [components objectsInRange:
 		    OFMakeRange(1, components.count - 1)];
 
 		if ([option isEqual: @"nameserver"]) {
@@ -445,7 +456,7 @@ parseNetStackArray(OFString *string)
 				continue;
 			}
 
-			[nameServers addObject: arguments.firstObject];
+			[_nameServers addObject: arguments.firstObject];
 		} else if ([option isEqual: @"domain"]) {
 			if (arguments.count != 1) {
 				objc_autoreleasePoolPop(pool2);
@@ -453,21 +464,16 @@ parseNetStackArray(OFString *string)
 			}
 
 			objc_release(_localDomain);
+			_localDomain = @"";
 			_localDomain = [arguments.firstObject copy];
-		} else if ([option isEqual: @"search"]) {
-			objc_release(_searchDomains);
-			_searchDomains = [arguments copy];
-		} else if ([option isEqual: @"options"])
+		} else if ([option isEqual: @"search"])
+			[_searchDomains addObjectsFromArray: arguments];
+		else if ([option isEqual: @"options"])
 			for (OFString *argument in arguments)
 				[self parseResolvConfOption: argument];
 
 		objc_autoreleasePoolPop(pool2);
 	}
-
-	[nameServers makeImmutable];
-
-	objc_release(_nameServers);
-	_nameServers = [nameServers copy];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -480,8 +486,6 @@ parseNetStackArray(OFString *string)
 	if (length < 4)
 		return;
 
-	OFMutableArray *nameServers = [OFMutableArray array];
-
 	DWORD numEntries;
 	OFCopyMemory(&numEntries, buffer, 4);
 
@@ -489,28 +493,26 @@ parseNetStackArray(OFString *string)
 		if (length < 4 + ((i + 1) * 44))
 			return;
 
-		if (_nameServers == nil) {
-			DWORD DNSLength, DNSOffset;
-			OFCopyMemory(&DNSLength, buffer + 4 + i * 44 + 28, 4);
-			OFCopyMemory(&DNSOffset, buffer + 4 + i * 44 + 32, 4);
+		DWORD DNSLength, DNSOffset;
+		OFCopyMemory(&DNSLength, buffer + 4 + i * 44 + 28, 4);
+		OFCopyMemory(&DNSOffset, buffer + 4 + i * 44 + 32, 4);
 
-			if (MAXDWORD - DNSOffset < DNSLength ||
-			    DNSOffset + DNSLength > length)
-				continue;
+		if (MAXDWORD - DNSOffset < DNSLength ||
+		    DNSOffset + DNSLength > length)
+			continue;
 
-			if (DNSLength % 4 != 0)
-				continue;
+		if (DNSLength % 4 != 0)
+			continue;
 
-			for (DWORD j = 0; j < DNSLength; j += 4)
-				[nameServers addObject: [OFString
-				    stringWithFormat: @"%u.%u.%u.%u",
-				    buffer[DNSOffset + j],
-				    buffer[DNSOffset + j + 1],
-				    buffer[DNSOffset + j + 2],
-				    buffer[DNSOffset + j + 3]]];
-		}
+		for (DWORD j = 0; j < DNSLength; j += 4)
+			[_nameServers addObject: [OFString
+			    stringWithFormat: @"%u.%u.%u.%u",
+					      buffer[DNSOffset + j],
+					      buffer[DNSOffset + j + 1],
+					      buffer[DNSOffset + j + 2],
+					      buffer[DNSOffset + j + 3]]];
 
-		if (_localDomain == nil) {
+		if (_localDomain.length == 0) {
 			DWORD domainLength, domainOffset;
 			OFCopyMemory(&domainLength,
 			    buffer + 4 + i * 44 + 36, 4);
@@ -529,11 +531,6 @@ parseNetStackArray(OFString *string)
 					     length: domainLength];
 		}
 	}
-
-	if (_nameServers == nil && nameServers.count > 0) {
-		[nameServers makeImmutable];
-		_nameServers = [nameServers copy];
-	}
 }
 
 - (void)obtainWindowsSystemConfig
@@ -548,7 +545,6 @@ parseNetStackArray(OFString *string)
 	if (GetNetworkParamsFuncPtr != NULL &&
 	    GetNetworkParamsFuncPtr(fixedInfo, &fiLength) == ERROR_SUCCESS) {
 		OFStringEncoding encoding = [OFLocale encoding];
-		OFMutableArray *nameServers = [OFMutableArray array];
 
 		PIP_ADDR_STRING iter;
 		for (iter = &fixedInfo->DnsServerList; iter != NULL;
@@ -558,12 +554,7 @@ parseNetStackArray(OFString *string)
 					       encoding: encoding];
 
 			if (nameServer.length > 0)
-				[nameServers addObject: nameServer];
-		}
-
-		if (nameServers.count > 0) {
-			[nameServers makeImmutable];
-			_nameServers = [nameServers copy];
+				[_nameServers addObject: nameServer];
 		}
 
 		if (fixedInfo->DomainName[0] != '\0')
@@ -584,9 +575,9 @@ parseNetStackArray(OFString *string)
 	OFString *nameServers = [key stringForValueNamed: @"NameServer"];
 	if (nameServers.length > 0) {
 		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
-		_nameServers = [[nameServers
+		[_nameServers addObjectsFromArray: [nameServers
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options] copy];
+						 options: options]];
 	}
 
 	OFString *localDomain = [key stringForValueNamed: @"Domain"];
@@ -596,14 +587,10 @@ parseNetStackArray(OFString *string)
 	OFString *searchDomains = [key stringForValueNamed: @"SearchList"];
 	if (searchDomains.length > 0) {
 		OFStringSeparationOptions options = OFStringSkipEmptyComponents;
-		_searchDomains = [[searchDomains
+		[_searchDomains addObjectsFromArray: [searchDomains
 		    componentsSeparatedByCharactersInSet: separatorsCS
-						 options: options] copy];
+						 options: options]];
 	}
-
-	if (_nameServers != nil && _localDomain != nil)
-		/* We already have everything we can get from VDHCP. */
-		return;
 
 	HANDLE vdhcp = CreateFileA("\\\\.\\VDHCP", GENERIC_READ | GENERIC_WRITE,
 	    FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
@@ -648,16 +635,13 @@ parseNetStackArray(OFString *string)
 - (void)obtainMorphOSSystemConfig
 {
 	void *pool = objc_autoreleasePoolPush();
-	OFMutableDictionary *staticHosts;
 
-	_nameServers = [parseNetStackArray(arexxCommand("NETSTACK",
-	    "QUERY NAMESERVERS")) copy];
+	[_nameServers addObjectsFromArray:
+	    parseNetStackArray(arexxCommand("NETSTACK", "QUERY NAMESERVERS"))];
 	_localDomain = [domainFromHostname(arexxCommand("NETSTACK",
 	    "QUERY HOSTNAME")) copy];
-	_searchDomains = [parseNetStackArray(arexxCommand("NETSTACK",
-	    "QUERY DOMAINS")) copy];
-
-	staticHosts = [OFMutableDictionary dictionary];
+	[_searchDomains addObjectsFromArray:
+	    parseNetStackArray(arexxCommand("NETSTACK", "QUERY DOMAINS"))];
 
 	for (OFString *entry in parseNetStackArray(arexxCommand("NETSTACK",
 	    "QUERY HOSTS"))) {
@@ -676,21 +660,17 @@ parseNetStackArray(OFString *string)
 			OFMutableArray *addresses;
 
 			host = host.lowercaseString;
-			addresses = [staticHosts objectForKey: host];
+			addresses = [_staticHosts objectForKey: host];
 
 			if (addresses == nil) {
 				addresses = [OFMutableArray array];
-				[staticHosts setObject: addresses forKey: host];
+				[_staticHosts setObject: addresses
+						 forKey: host];
 			}
 
 			[addresses addObject: address];
 		}
 	}
-	for (OFMutableArray *addresses in [staticHosts objectEnumerator])
-		[addresses makeImmutable];
-
-	[staticHosts makeImmutable];
-	_staticHosts = [staticHosts copy];
 
 	objc_autoreleasePoolPop(pool);
 }
@@ -699,7 +679,6 @@ parseNetStackArray(OFString *string)
 #if defined(OF_AMIGAOS_M68K) || defined(OF_AMIGAOS4)
 - (bool)obtainRoadshowSystemConfig
 {
-	OFMutableArray *nameServers;
 	OFStringEncoding encoding;
 	struct List *nameServerList;
 	char buffer[MAXHOSTNAMELEN];
@@ -712,7 +691,6 @@ parseNetStackArray(OFString *string)
 	if (SocketBaseTagList(tags) != 0 || !hasDNSAPI)
 		return false;
 
-	nameServers = [OFMutableArray array];
 	encoding = [OFLocale encoding];
 	nameServerList = ObtainDomainNameServerList();
 
@@ -730,7 +708,7 @@ parseNetStackArray(OFString *string)
 				    stringWithCString: iter->dnsn_Address
 					     encoding: encoding];
 
-				[nameServers addObject: address];
+				[_nameServers addObject: address];
 			}
 
 			iter = (struct DomainNameServerNode *)
@@ -738,11 +716,6 @@ parseNetStackArray(OFString *string)
 		}
 	} @finally {
 		ReleaseDomainNameServerList(nameServerList);
-	}
-
-	if (nameServers.count > 0) {
-		[nameServers makeImmutable];
-		_nameServers = [nameServers copy];
 	}
 
 	if (GetDefaultDomainName(buffer, sizeof(buffer)))
@@ -756,7 +729,6 @@ parseNetStackArray(OFString *string)
 #ifdef OF_NINTENDO_3DS
 - (void)obtainNintendo3DSSytemConfig
 {
-	OFMutableArray *nameServers = [OFMutableArray array];
 	union {
 		/*
 		 * For some unknown reason, this needs a 336 bytes buffer and
@@ -784,14 +756,9 @@ parseNetStackArray(OFString *string)
 		if (ip == 0)
 			continue;
 
-		[nameServers addObject: [OFString stringWithFormat:
+		[_nameServers addObject: [OFString stringWithFormat:
 		    @"%u.%u.%u.%u", (ip >> 24) & 0xFF, (ip >> 16) & 0xFF,
 		    (ip >> 8) & 0xFF, ip & 0xFF]];
-	}
-
-	if (nameServers.count > 0) {
-		[nameServers makeImmutable];
-		_nameServers = [nameServers copy];
 	}
 }
 #endif
@@ -871,39 +838,32 @@ parseNetStackArray(OFString *string)
 	[self parseResolvConf: RESOLV_CONF_PATH];
 #endif
 
-	if (_staticHosts == nil) {
-		OFArray *localhost =
+	if (_staticHosts.count == 0) {
+		OFMutableArray *localhost =
+		    [OFMutableArray arrayWithObject: @"127.0.0.1"];
 #ifdef OF_HAVE_IPV6
-		    [OFArray arrayWithObjects: @"::1", @"127.0.0.1", nil];
-#else
-		    [OFArray arrayWithObject: @"127.0.0.1"];
+		[localhost addObject: @"::1"];
 #endif
-
-		_staticHosts = [[OFDictionary alloc]
-		    initWithObject: localhost
-			    forKey: @"localhost"];
+		[_staticHosts setObject: localhost forKey: @"localhost"];
 	}
 
-	if (_nameServers == nil)
+	if (_nameServers.count == 0) {
+		[_nameServers addObject: @"127.0.0.1"];
 #ifdef OF_HAVE_IPV6
-		_nameServers = [[OFArray alloc]
-		    initWithObjects: @"127.0.0.1", @"::1", nil];
-#else
-		_nameServers = [[OFArray alloc] initWithObject: @"127.0.0.1"];
+		[_nameServers addObject: @"::1"];
 #endif
+	}
 
 #if !defined(OF_WII) && !defined(OF_MORPHOS)
-	if (_localDomain == nil)
+	if (_localDomain.length == 0) {
+		objc_release(_localDomain);
+		_localDomain = @"";
 		_localDomain = [domainFromHostname(obtainHostname()) copy];
+	}
 #endif
 
-	if (_searchDomains == nil) {
-		if (_localDomain != nil)
-			_searchDomains = [[OFArray alloc]
-			    initWithObject: _localDomain];
-		else
-			_searchDomains = [[OFArray alloc] init];
-	}
+	if (_searchDomains.count == 0 && _localDomain.length > 0)
+		[_searchDomains addObject: _localDomain];
 
 	objc_release(_lastConfigReload);
 	_lastConfigReload = nil;

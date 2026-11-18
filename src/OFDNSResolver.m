@@ -678,31 +678,56 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 {
 	[_settings reload];
 
-	return _settings->_staticHosts;
+	OFMutableDictionary *staticHosts = [OFMutableDictionary
+	    dictionaryWithCapacity: _settings->_staticHosts.count];
+	void *pool = objc_autoreleasePoolPush();
+
+	for (OFString *key in _settings->_staticHosts) {
+		OFArray *addresses = objc_autorelease(
+		    [[_settings->_staticHosts objectForKey: key] copy]);
+		[staticHosts setObject: addresses forKey: key];
+	}
+
+	[staticHosts makeImmutable];
+
+	objc_autoreleasePoolPop(pool);
+
+	return staticHosts;
 }
 
 - (void)setStaticHosts: (OFDictionary *)staticHosts
 {
 	[_settings reload];
 
-	OFDictionary *old = _settings->_staticHosts;
-	_settings->_staticHosts = [staticHosts copy];
-	objc_release(old);
+	void *pool = objc_autoreleasePoolPush();
+	OFMutableDictionary *copy =
+	    [OFMutableDictionary dictionaryWithCapacity: staticHosts.count];
+
+	for (OFString *key in staticHosts) {
+		OFMutableArray *addresses = objc_autorelease(
+		    [[staticHosts objectForKey: key] mutableCopy]);
+		[copy setObject: addresses forKey: key];
+	}
+
+	objc_autorelease(_settings->_staticHosts);
+	_settings->_staticHosts = objc_retain(copy);
+
+	objc_autoreleasePoolPop(pool);
 }
 
 - (OFArray *)nameServers
 {
 	[_settings reload];
 
-	return _settings->_nameServers;
+	return objc_autoreleaseReturnValue([_settings->_nameServers copy]);
 }
 
 - (void)setNameServers: (OFArray *)nameServers
 {
 	[_settings reload];
 
-	OFArray *old = _settings->_nameServers;
-	_settings->_nameServers = [nameServers copy];
+	OFMutableArray *old = _settings->_nameServers;
+	_settings->_nameServers = [nameServers mutableCopy];
 	objc_release(old);
 }
 
@@ -717,15 +742,15 @@ containsExpiredRecord(OFDNSResponseRecords responseRecords, uint32_t age)
 {
 	[_settings reload];
 
-	return _settings->_searchDomains;
+	return objc_autoreleaseReturnValue([_settings->_searchDomains copy]);
 }
 
 - (void)setSearchDomains: (OFArray *)searchDomains
 {
 	[_settings reload];
 
-	OFArray *old = _settings->_searchDomains;
-	_settings->_searchDomains = [searchDomains copy];
+	OFMutableArray *old = _settings->_searchDomains;
+	_settings->_searchDomains = [searchDomains mutableCopy];
 	objc_release(old);
 }
 

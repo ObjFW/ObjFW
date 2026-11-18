@@ -21,18 +21,18 @@
 
 OF_ASSUME_NONNULL_BEGIN
 
-@class OFArray OF_GENERIC(ObjectType);
 @class OFDate;
-@class OFDictionary OF_GENERIC(KeyType, ObjectType);
+@class OFMutableArray OF_GENERIC(ObjectType);
+@class OFMutableDictionary OF_GENERIC(KeyType, ObjectType);
 
 @interface OFDNSResolverSettings: OFObject <OFCopying>
 {
 @public
-	OFDictionary OF_GENERIC(OFString *, OFArray OF_GENERIC(OFString *) *)
-	    *_staticHosts;
-	OFArray OF_GENERIC(OFString *) *_nameServers;
-	OFString *_Nullable _localDomain;
-	OFArray OF_GENERIC(OFString *) *_searchDomains;
+	OFMutableDictionary OF_GENERIC(OFString *,
+	    OFMutableArray OF_GENERIC(OFString *) *) *_staticHosts;
+	OFMutableArray OF_GENERIC(OFString *) *_nameServers;
+	OFString *_localDomain;
+	OFMutableArray OF_GENERIC(OFString *) *_searchDomains;
 	OFTimeInterval _timeout;
 	unsigned int _maxAttempts, _minNumberOfDotsInAbsoluteName;
 	bool _forcesTCP;
