@@ -541,15 +541,15 @@ objc_createLibraryTrampolinesForModule(struct objc_module *module,
 {
 	struct objc_symtab *symtab = module->symtab;
 
-	for (size_t i = 0; i < symtab->classDefsCount; i++) {
+	for (size_t i = 0; i < symtab->classDefCount; i++) {
 		struct objc_class *class = symtab->defs[i];
 
 		createTrampolinesForMethodList(class->methodList, base);
 		createTrampolinesForMethodList(class->isa->methodList, base);
 	}
 
-	for (size_t i = symtab->classDefsCount;
-	    i < symtab->classDefsCount + symtab->categoryDefsCount; i++) {
+	for (size_t i = symtab->classDefCount;
+	    i < symtab->classDefCount + symtab->categoryDefCount; i++) {
 		struct objc_category *category = symtab->defs[i];
 
 		createTrampolinesForMethodList(category->instanceMethods, base);

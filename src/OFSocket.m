@@ -905,7 +905,7 @@ IPv6String(const OFSocketAddress *address)
 	OFMutableString *string = [OFMutableString string];
 	const struct sockaddr_in6 *addrIn6 = &address->sockaddr.in6;
 	int_fast8_t zerosStart = -1, maxZerosStart = -1;
-	uint_fast8_t zerosCount = 0, maxZerosCount = 0;
+	uint_fast8_t zeroCount = 0, maxZeroCount = 0;
 	bool first = true;
 
 	if (OFCompareMemory(addrIn6->sin6_addr.s6_addr,
@@ -921,26 +921,26 @@ IPv6String(const OFSocketAddress *address)
 		if (addrIn6->sin6_addr.s6_addr[i] == 0 &&
 		    addrIn6->sin6_addr.s6_addr[i + 1] == 0) {
 			if (zerosStart >= 0)
-				zerosCount++;
+				zeroCount++;
 			else {
 				zerosStart = i;
-				zerosCount = 1;
+				zeroCount = 1;
 			}
 		} else {
-			if (zerosCount > maxZerosCount) {
+			if (zeroCount > maxZeroCount) {
 				maxZerosStart = zerosStart;
-				maxZerosCount = zerosCount;
+				maxZeroCount = zeroCount;
 			}
 
 			zerosStart = -1;
 		}
 	}
-	if (zerosCount > maxZerosCount) {
+	if (zeroCount > maxZeroCount) {
 		maxZerosStart = zerosStart;
-		maxZerosCount = zerosCount;
+		maxZeroCount = zeroCount;
 	}
 
-	if (maxZerosCount >= 2) {
+	if (maxZeroCount >= 2) {
 		for (int_fast8_t i = 0; i < maxZerosStart; i += 2) {
 			[string appendFormat:
 			    (first ? @"%x" : @":%x"),
@@ -952,7 +952,7 @@ IPv6String(const OFSocketAddress *address)
 		[string appendString: @"::"];
 		first = true;
 
-		for (int_fast8_t i = maxZerosStart + (maxZerosCount * 2);
+		for (int_fast8_t i = maxZerosStart + (maxZeroCount * 2);
 		    i < 16; i += 2) {
 			[string appendFormat:
 			    (first ? @"%x" : @":%x"),

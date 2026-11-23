@@ -269,12 +269,12 @@ valueForKeyWithSelector(id self, OFString *key, SEL selector)
 {
 	void *pool = objc_autoreleasePoolPush();
 	OFArray *keys = [keyPath componentsSeparatedByString: @"."];
-	size_t keysCount = keys.count;
+	size_t keyCount = keys.count;
 	id object = self;
 	size_t i = 0;
 
 	for (OFString *key in keys) {
-		if (++i == keysCount)
+		if (++i == keyCount)
 			[object setValue: value forKey: key];
 		else
 			object = [object valueForKey: key];

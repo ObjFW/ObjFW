@@ -121,7 +121,7 @@ struct objc_class _NSConcreteMallocBlock = {
 static struct {
 	unsigned long unknown;
 	struct objc_selector *selectorRefs;
-	uint16_t classDefsCount, categoryDefsCount;
+	uint16_t classDefCount, categoryDefCount;
 	void *defs[4];
 } symtab = {
 	0, NULL, 3, 0,

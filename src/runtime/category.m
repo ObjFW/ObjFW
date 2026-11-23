@@ -175,9 +175,9 @@ void
 _objc_registerAllCategories(struct objc_symtab *symtab)
 {
 	struct objc_category **categories =
-	    (struct objc_category **)symtab->defs + symtab->classDefsCount;
+	    (struct objc_category **)symtab->defs + symtab->classDefCount;
 
-	for (size_t i = 0; i < symtab->categoryDefsCount; i++) {
+	for (size_t i = 0; i < symtab->categoryDefCount; i++) {
 		registerSelectors(categories[i]);
 		registerCategory(categories[i]);
 	}

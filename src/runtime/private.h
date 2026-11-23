@@ -177,8 +177,8 @@ struct objc_static_instances {
 struct objc_symtab {
 	unsigned long unknown;
 	struct objc_selector *_Nullable selectorRefs;
-	uint16_t classDefsCount;
-	uint16_t categoryDefsCount;
+	uint16_t classDefCount;
+	uint16_t categoryDefCount;
 	void *_Nonnull defs[1];
 };
 

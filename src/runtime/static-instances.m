@@ -26,7 +26,7 @@
 #import "private.h"
 
 static struct objc_static_instances **staticInstancesList = NULL;
-static size_t staticInstancesCount = 0;
+static size_t staticInstanceCount = 0;
 
 void
 _objc_initStaticInstances(struct objc_symtab *symtab)
@@ -34,7 +34,7 @@ _objc_initStaticInstances(struct objc_symtab *symtab)
 	struct objc_static_instances **staticInstances;
 
 	/* Check if the class for a static instance became available */
-	for (size_t i = 0; i < staticInstancesCount; i++) {
+	for (size_t i = 0; i < staticInstanceCount; i++) {
 		Class class = objc_lookUpClass(
 		    staticInstancesList[i]->className);
 
@@ -43,20 +43,20 @@ _objc_initStaticInstances(struct objc_symtab *symtab)
 			    *instances != nil; instances++)
 				object_setClass(*instances, class);
 
-			staticInstancesCount--;
+			staticInstanceCount--;
 
-			if (staticInstancesCount == 0) {
+			if (staticInstanceCount == 0) {
 				free(staticInstancesList);
 				staticInstancesList = NULL;
 				break;
 			}
 
 			staticInstancesList[i] =
-			    staticInstancesList[staticInstancesCount];
+			    staticInstancesList[staticInstanceCount];
 
 			staticInstancesList = realloc(staticInstancesList,
 			    sizeof(*staticInstancesList) *
-			    staticInstancesCount);
+			    staticInstanceCount);
 
 			if (staticInstancesList == NULL)
 				_OBJC_ERROR("Not enough memory for list of "
@@ -71,7 +71,7 @@ _objc_initStaticInstances(struct objc_symtab *symtab)
 	}
 
 	staticInstances = (struct objc_static_instances **)
-	    symtab->defs[symtab->classDefsCount + symtab->categoryDefsCount];
+	    symtab->defs[symtab->classDefCount + symtab->categoryDefCount];
 
 	if (staticInstances == NULL)
 		return;
@@ -86,13 +86,13 @@ _objc_initStaticInstances(struct objc_symtab *symtab)
 		} else {
 			staticInstancesList = realloc(staticInstancesList,
 			    sizeof(*staticInstancesList) *
-			    (staticInstancesCount + 1));
+			    (staticInstanceCount + 1));
 
 			if (staticInstancesList == NULL)
 				_OBJC_ERROR("Not enough memory for list of "
 				    "static instances!");
 
-			staticInstancesList[staticInstancesCount++] =
+			staticInstancesList[staticInstanceCount++] =
 			    *staticInstances;
 		}
 	}
@@ -103,5 +103,5 @@ _objc_forgetPendingStaticInstances(void)
 {
 	free(staticInstancesList);
 	staticInstancesList = NULL;
-	staticInstancesCount = 0;
+	staticInstanceCount = 0;
 }

@@ -60,8 +60,8 @@ OF_ASSUME_NONNULL_BEGIN
 				struct _OFHuffmanTree *_Nullable treeIter;
 				uint8_t *_Nullable lengths;
 				uint16_t receivedCount;
-				uint8_t value, litLenCodesCount, distCodesCount;
-				uint8_t codeLenCodesCount;
+				uint8_t value, litLenCodeCount, distCodeCount;
+				uint8_t codeLenCodeCount;
 			} huffmanTree;
 			struct {
 				struct _OFHuffmanTree *_Nullable litLenTree;

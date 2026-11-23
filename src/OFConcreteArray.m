@@ -254,11 +254,11 @@
 	OFMutableArray *ret = [OFMutableArray arrayWithCapacity: indexes.count];
 	void *pool = objc_autoreleasePoolPush();
 	const OFRange *ranges = indexes.of_ranges.items;
-	size_t rangesCount = indexes.of_ranges.count;
+	size_t rangeCount = indexes.of_ranges.count;
 	id const *items = _array.items;
 	size_t count = _array.count;
 
-	for (size_t i = 0; i < rangesCount; i++) {
+	for (size_t i = 0; i < rangeCount; i++) {
 		if (OFEndOfRange(ranges[i]) > count)
 			@throw [OFOutOfRangeException exception];
 

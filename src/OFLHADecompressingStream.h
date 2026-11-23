@@ -43,7 +43,7 @@ OF_DIRECT_MEMBERS
 	OFHuffmanTree _Nullable _litLenTree;
 	OFHuffmanTree _Nullable _distTree;
 	OFHuffmanTree _Nullable _treeIter;
-	uint16_t _codesCount, _codesReceived;
+	uint16_t _codeCount, _codesReceived;
 	bool _currentIsExtendedLength, _skip;
 	uint8_t *_Nullable _codesLengths;
 	uint16_t _length;

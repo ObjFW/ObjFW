@@ -127,9 +127,9 @@
 - (void)insertItems: (const void *)items atIndexes: (OFIndexSet *)indexes
 {
 	const OFRange *ranges = indexes.of_ranges.items;
-	size_t rangesCount = indexes.of_ranges.count, count = _count;
+	size_t rangeCount = indexes.of_ranges.count, count = _count;
 
-	for (size_t i = 0; i < rangesCount; i++) {
+	for (size_t i = 0; i < rangeCount; i++) {
 		if (ranges[i].length > SIZE_MAX - count)
 			@throw [OFOutOfRangeException exception];
 
@@ -141,7 +141,7 @@
 		_capacity = count;
 	}
 
-	for (size_t i = 0; i < rangesCount; i++) {
+	for (size_t i = 0; i < rangeCount; i++) {
 		OFRange range = ranges[i];
 
 		if (range.location > _count)

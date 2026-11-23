@@ -37,7 +37,7 @@ static const uint8_t selLevels = 2;
 #endif
 
 static struct objc_hashtable *selectors = NULL;
-static uint32_t selectorsCount = 0;
+static uint32_t selectorCount = 0;
 static struct objc_sparsearray *selectorNames = NULL;
 static void **freeList = NULL;
 static size_t freeListCount = 0;
@@ -48,7 +48,7 @@ _objc_registerSelector(struct objc_selector *selector)
 	SEL existingSelector;
 	const char *name;
 
-	if (selectorsCount > maxSel)
+	if (selectorCount > maxSel)
 		_OBJC_ERROR("Out of selector slots!");
 
 	if (selectors == NULL)
@@ -64,7 +64,7 @@ _objc_registerSelector(struct objc_selector *selector)
 		selectorNames = _objc_sparsearray_new(selLevels);
 
 	name = (const char *)selector->UID;
-	selector->UID = selectorsCount++;
+	selector->UID = selectorCount++;
 
 	_objc_hashtable_set(selectors, name, selector);
 	_objc_sparsearray_set(selectorNames, (uint32_t)selector->UID,
@@ -141,7 +141,7 @@ _objc_unregisterAllSelectors(void)
 	}
 
 	selectors = NULL;
-	selectorsCount = 0;
+	selectorCount = 0;
 	selectorNames = NULL;
 	freeList = NULL;
 	freeListCount = 0;

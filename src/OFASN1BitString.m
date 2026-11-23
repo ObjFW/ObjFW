@@ -70,14 +70,14 @@
 		size_t roundedUpLength = OFRoundUpToPowerOf2(8, bitCount);
 		unsigned char unusedBits = roundedUpLength - bitCount;
 
-		size_t bytesCount = bits.count;
-		if (bytesCount != roundedUpLength / 8)
+		size_t byteCount = bits.count;
+		if (byteCount != roundedUpLength / 8)
 			@throw [OFInvalidFormatException exception];
 
 		DEREncodedContents = [OFMutableData
-		    dataWithCapacity: bytesCount + 1];
+		    dataWithCapacity: byteCount + 1];
 		[DEREncodedContents addItem: &unusedBits];
-		[DEREncodedContents addItems: bits.items count: bytesCount];
+		[DEREncodedContents addItems: bits.items count: byteCount];
 	} @catch (id e) {
 		objc_release(self);
 		@throw e;

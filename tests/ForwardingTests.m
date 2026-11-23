@@ -32,7 +32,7 @@
 @interface ForwardingTests: OTTestCase
 @end
 
-static size_t forwardingsCount = 0;
+static size_t forwardingCount = 0;
 static bool success = false;
 static id target = nil;
 
@@ -73,7 +73,7 @@ test(id self, SEL _cmd)
 {
 	[super setUp];
 
-	forwardingsCount = 0;
+	forwardingCount = 0;
 	success = false;
 	target = nil;
 }
@@ -82,10 +82,10 @@ test(id self, SEL _cmd)
 {
 	[ForwardingTestObject test];
 	OTAssertTrue(success);
-	OTAssertEqual(forwardingsCount, 1);
+	OTAssertEqual(forwardingCount, 1);
 
 	[ForwardingTestObject test];
-	OTAssertEqual(forwardingsCount, 1);
+	OTAssertEqual(forwardingCount, 1);
 }
 
 - (void)testForwardingMessageAndAddingInstanceMethod
@@ -95,10 +95,10 @@ test(id self, SEL _cmd)
 
 	[testObject test];
 	OTAssertTrue(success);
-	OTAssertEqual(forwardingsCount, 1);
+	OTAssertEqual(forwardingCount, 1);
 
 	[testObject test];
-	OTAssertEqual(forwardingsCount, 1);
+	OTAssertEqual(forwardingCount, 1);
 }
 
 #ifdef OF_HAVE_FORWARDING_TARGET_FOR_SELECTOR
@@ -215,7 +215,7 @@ test(id self, SEL _cmd)
 @implementation ForwardingTestObject
 + (bool)resolveClassMethod: (SEL)selector
 {
-	forwardingsCount++;
+	forwardingCount++;
 
 	if (sel_isEqual(selector, @selector(test))) {
 		class_replaceMethod(object_getClass(self), @selector(test),
@@ -228,7 +228,7 @@ test(id self, SEL _cmd)
 
 + (bool)resolveInstanceMethod: (SEL)selector
 {
-	forwardingsCount++;
+	forwardingCount++;
 
 	if (sel_isEqual(selector, @selector(test))) {
 		class_replaceMethod(self, @selector(test), (IMP)test, "v@:");

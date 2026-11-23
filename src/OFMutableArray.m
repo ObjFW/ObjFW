@@ -257,13 +257,13 @@ OF_SINGLETON_METHODS
 {
 	void *pool = objc_autoreleasePoolPush();
 	const OFRange *ranges = indexes.of_ranges.items;
-	size_t rangesCount = indexes.of_ranges.count;
+	size_t rangeCount = indexes.of_ranges.count;
 	size_t objectsIndex = 0;
 
 	if (objects.count != indexes.count)
 		@throw [OFOutOfRangeException exception];
 
-	for (size_t i = 0; i < rangesCount; i++) {
+	for (size_t i = 0; i < rangeCount; i++) {
 		for (size_t j = ranges[i].location; j < OFEndOfRange(ranges[i]);
 		    j++) {
 			id object = [objects objectAtIndex: objectsIndex++];

@@ -616,7 +616,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 	OFMutableIRI *mutableIRI;
 	OFArray OF_GENERIC(OFString *) *components;
 	OFMutableArray OF_GENERIC(OFIRI *) *componentIRIs;
-	size_t componentIRIsCount;
+	size_t componentIRICount;
 	ssize_t i;
 
 	if (IRI == nil)
@@ -675,14 +675,14 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 			    objc_autorelease([mutableIRI copy])];
 	}
 
-	componentIRIsCount = componentIRIs.count;
-	for (i = componentIRIsCount - 1; i > 0; i--) {
+	componentIRICount = componentIRIs.count;
+	for (i = componentIRICount - 1; i > 0; i--) {
 		if ([self directoryExistsAtIRI:
 		    [componentIRIs objectAtIndex: i]])
 			break;
 	}
 
-	if (++i == (ssize_t)componentIRIsCount) {
+	if (++i == (ssize_t)componentIRICount) {
 		/*
 		 * The IRI exists, even though before we made sure it did not.
 		 * That means it was created in the meantime by something else,
@@ -692,7 +692,7 @@ attributeForKeyOrException(OFFileAttributes attributes, OFFileAttributeKey key)
 		return;
 	}
 
-	for (; i < (ssize_t)componentIRIsCount; i++)
+	for (; i < (ssize_t)componentIRICount; i++)
 		[self createDirectoryAtIRI: [componentIRIs objectAtIndex: i]];
 
 	objc_autoreleasePoolPop(pool);

@@ -710,7 +710,7 @@ inTagState(OFXMLParser *self)
 	void *pool;
 	OFString *namespace;
 	OFXMLAttribute *const *attributesObjects;
-	size_t attributesCount;
+	size_t attributeCount;
 
 	if (self->_data[self->_i] != '>' && self->_data[self->_i] != '/') {
 		if (self->_data[self->_i] != ' ' &&
@@ -727,7 +727,7 @@ inTagState(OFXMLParser *self)
 	}
 
 	attributesObjects = self->_attributes.objects;
-	attributesCount = self->_attributes.count;
+	attributeCount = self->_attributes.count;
 
 	namespace = namespaceForPrefix(self->_prefix, self->_namespaces);
 
@@ -736,7 +736,7 @@ inTagState(OFXMLParser *self)
 		    exceptionWithPrefix: self->_prefix
 				 parser: self];
 
-	for (size_t j = 0; j < attributesCount; j++)
+	for (size_t j = 0; j < attributeCount; j++)
 		resolveAttributeNamespace(attributesObjects[j],
 		    self->_namespaces, self);
 

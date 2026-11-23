@@ -122,22 +122,21 @@ isSubclassOfClass(Class class, Class superclass)
 - (OFMutableSet OF_GENERIC(Class) *)testClasses
 {
 	Class *classes;
-	int classesCount;
+	int classCount;
 	OFMutableSet *testClasses;
 
-	classesCount = objc_getClassList(NULL, 0);
-	if (classesCount < 1)
+	classCount = objc_getClassList(NULL, 0);
+	if (classCount < 1)
 		return nil;
 
-	classes = OFAllocMemory(classesCount, sizeof(Class));
+	classes = OFAllocMemory(classCount, sizeof(Class));
 	@try {
-		if ((int)objc_getClassList(classes, classesCount) !=
-		    classesCount)
+		if ((int)objc_getClassList(classes, classCount) != classCount)
 			return nil;
 
 		testClasses = [OFMutableSet set];
 
-		for (int i = 0; i < classesCount; i++) {
+		for (int i = 0; i < classCount; i++) {
 			/*
 			 * Make sure the class is initialized.
 			 * Required for the ObjFW runtime, as otherwise

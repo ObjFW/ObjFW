@@ -29,13 +29,13 @@
 
 enum State {
 	stateBlockHeader,
-	stateCodeLenCodesCount,
+	stateCodeLenCodeCount,
 	stateCodeLenTree,
 	stateCodeLenTreeSingle,
-	stateLitLenCodesCount,
+	stateLitLenCodeCount,
 	stateLitLenTree,
 	stateLitLenTreeSingle,
-	stateDistCodesCount,
+	stateDistCodeCount,
 	stateDistTree,
 	stateDistTreeSingle,
 	stateBlockLitLen,
@@ -158,9 +158,9 @@ start:
 
 		_symbolsLeft = bits;
 
-		_state = stateCodeLenCodesCount;
+		_state = stateCodeLenCodeCount;
 		goto start;
-	case stateCodeLenCodesCount:
+	case stateCodeLenCodeCount:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 			return bytesWritten;
 
@@ -172,7 +172,7 @@ start:
 			goto start;
 		}
 
-		_codesCount = bits;
+		_codeCount = bits;
 		_codesReceived = 0;
 		_codesLengths = OFAllocZeroedMemory(bits, 1);
 		_skip = true;
@@ -180,7 +180,7 @@ start:
 		_state = stateCodeLenTree;
 		goto start;
 	case stateCodeLenTree:
-		while (_codesReceived < _codesCount) {
+		while (_codesReceived < _codeCount) {
 			if OF_UNLIKELY (_currentIsExtendedLength) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 1))
 					return bytesWritten;
@@ -200,7 +200,7 @@ start:
 					return bytesWritten;
 
 				if OF_UNLIKELY (_codesReceived + bits >
-				    _codesCount)
+				    _codeCount)
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -223,11 +223,11 @@ start:
 				_codesReceived++;
 		}
 
-		_codeLenTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_codeLenTree = _OFHuffmanTreeNew(_codesLengths, _codeCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
-		_state = stateLitLenCodesCount;
+		_state = stateLitLenCodeCount;
 		goto start;
 	case stateCodeLenTreeSingle:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
@@ -235,9 +235,9 @@ start:
 
 		_codeLenTree = _OFHuffmanTreeNewSingle(bits);
 
-		_state = stateLitLenCodesCount;
+		_state = stateLitLenCodeCount;
 		goto start;
-	case stateLitLenCodesCount:
+	case stateLitLenCodeCount:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 9))
 			return bytesWritten;
 
@@ -252,7 +252,7 @@ start:
 			goto start;
 		}
 
-		_codesCount = bits;
+		_codeCount = bits;
 		_codesReceived = 0;
 		_codesLengths = OFAllocZeroedMemory(bits, 1);
 		_skip = false;
@@ -261,7 +261,7 @@ start:
 		_state = stateLitLenTree;
 		goto start;
 	case stateLitLenTree:
-		while (_codesReceived < _codesCount) {
+		while (_codesReceived < _codeCount) {
 			if OF_UNLIKELY (_skip) {
 				uint16_t skipCount;
 
@@ -288,7 +288,7 @@ start:
 				}
 
 				if OF_UNLIKELY (_codesReceived + skipCount >
-				    _codesCount)
+				    _codeCount)
 					@throw [OFInvalidFormatException
 					    exception];
 
@@ -312,14 +312,14 @@ start:
 				_codesLengths[_codesReceived++] = value - 2;
 		}
 
-		_litLenTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_litLenTree = _OFHuffmanTreeNew(_codesLengths, _codeCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 
 		_OFHuffmanTreeFree(_codeLenTree);
 		_codeLenTree = NULL;
 
-		_state = stateDistCodesCount;
+		_state = stateDistCodeCount;
 		goto start;
 	case stateLitLenTreeSingle:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, 9))
@@ -327,9 +327,9 @@ start:
 
 		_litLenTree = _OFHuffmanTreeNewSingle(bits);
 
-		_state = stateDistCodesCount;
+		_state = stateDistCodeCount;
 		goto start;
-	case stateDistCodesCount:
+	case stateDistCodeCount:
 		if OF_UNLIKELY (!tryReadBits(self, &bits, _distanceBits))
 			return bytesWritten;
 
@@ -341,7 +341,7 @@ start:
 			goto start;
 		}
 
-		_codesCount = bits;
+		_codeCount = bits;
 		_codesReceived = 0;
 		_codesLengths = OFAllocZeroedMemory(bits, 1);
 
@@ -349,7 +349,7 @@ start:
 		_state = stateDistTree;
 		goto start;
 	case stateDistTree:
-		while (_codesReceived < _codesCount) {
+		while (_codesReceived < _codeCount) {
 			if OF_UNLIKELY (_currentIsExtendedLength) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 1))
 					return bytesWritten;
@@ -376,7 +376,7 @@ start:
 				_codesReceived++;
 		}
 
-		_distTree = _OFHuffmanTreeNew(_codesLengths, _codesCount);
+		_distTree = _OFHuffmanTreeNew(_codesLengths, _codeCount);
 		OFFreeMemory(_codesLengths);
 		_codesLengths = NULL;
 

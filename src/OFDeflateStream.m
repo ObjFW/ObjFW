@@ -312,9 +312,9 @@ start:
 			ctx->ctx.huffmanTree.lengths = NULL;
 			ctx->ctx.huffmanTree.receivedCount = 0;
 			ctx->ctx.huffmanTree.value = 0xFE;
-			ctx->ctx.huffmanTree.litLenCodesCount = 0xFF;
-			ctx->ctx.huffmanTree.distCodesCount = 0xFF;
-			ctx->ctx.huffmanTree.codeLenCodesCount = 0xFF;
+			ctx->ctx.huffmanTree.litLenCodeCount = 0xFF;
+			ctx->ctx.huffmanTree.distCodeCount = 0xFF;
+			ctx->ctx.huffmanTree.codeLenCodeCount = 0xFF;
 			break;
 		default:
 			@throw [OFInvalidFormatException exception];
@@ -385,7 +385,7 @@ start:
 	case stateHuffmanTree:
 #define CTX ctx->ctx.huffmanTree
 		if OF_LIKELY (CTX.value == 0xFE) {
-			if OF_LIKELY (CTX.litLenCodesCount == 0xFF) {
+			if OF_LIKELY (CTX.litLenCodeCount == 0xFF) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 					return bytesWritten;
 
@@ -393,28 +393,28 @@ start:
 					@throw [OFInvalidFormatException
 					    exception];
 
-				CTX.litLenCodesCount = bits;
+				CTX.litLenCodeCount = bits;
 			}
 
-			if OF_LIKELY (CTX.distCodesCount == 0xFF) {
+			if OF_LIKELY (CTX.distCodeCount == 0xFF) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 5))
 					return bytesWritten;
 
-				CTX.distCodesCount = bits;
+				CTX.distCodeCount = bits;
 			}
 
-			if OF_LIKELY (CTX.codeLenCodesCount == 0xFF) {
+			if OF_LIKELY (CTX.codeLenCodeCount == 0xFF) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 4))
 					return bytesWritten;
 
-				CTX.codeLenCodesCount = bits;
+				CTX.codeLenCodeCount = bits;
 			}
 
 			if OF_LIKELY (CTX.lengths == NULL)
 				CTX.lengths = OFAllocZeroedMemory(19, 1);
 
 			for (uint16_t i = CTX.receivedCount;
-			    i < CTX.codeLenCodesCount + 4; i++) {
+			    i < CTX.codeLenCodeCount + 4; i++) {
 				if OF_UNLIKELY (!tryReadBits(self, &bits, 3)) {
 					CTX.receivedCount = i;
 					return bytesWritten;
@@ -434,10 +434,10 @@ start:
 
 		if OF_LIKELY (CTX.lengths == NULL)
 			CTX.lengths = OFAllocMemory(
-			    CTX.litLenCodesCount + CTX.distCodesCount + 258, 1);
+			    CTX.litLenCodeCount + CTX.distCodeCount + 258, 1);
 
 		for (uint16_t i = CTX.receivedCount;
-		    i < CTX.litLenCodesCount + CTX.distCodesCount + 258;) {
+		    i < CTX.litLenCodeCount + CTX.distCodeCount + 258;) {
 			uint8_t j, count;
 
 			if OF_LIKELY (CTX.value == 0xFF) {
@@ -499,7 +499,7 @@ start:
 			}
 
 			if OF_UNLIKELY (i + count >
-			    CTX.litLenCodesCount + CTX.distCodesCount + 258)
+			    CTX.litLenCodeCount + CTX.distCodeCount + 258)
 				@throw [OFInvalidFormatException exception];
 
 			for (j = 0; j < count; j++)
@@ -512,10 +512,10 @@ start:
 		CTX.codeLenTree = NULL;
 
 		CTX.litLenTree = _OFHuffmanTreeNew(CTX.lengths,
-		    CTX.litLenCodesCount + 257);
+		    CTX.litLenCodeCount + 257);
 		CTX.distTree = _OFHuffmanTreeNew(
-		    CTX.lengths + CTX.litLenCodesCount + 257,
-		    CTX.distCodesCount + 1);
+		    CTX.lengths + CTX.litLenCodeCount + 257,
+		    CTX.distCodeCount + 1);
 
 		OFFreeMemory(CTX.lengths);
 

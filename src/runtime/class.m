@@ -28,7 +28,7 @@
 #import "private.h"
 
 static struct objc_hashtable *classes = NULL;
-static unsigned classesCount = 0;
+static unsigned classCount = 0;
 static Class *loadQueue = NULL;
 static size_t loadQueueCount = 0;
 static struct objc_dtable *emptyDTable = NULL;
@@ -51,7 +51,7 @@ registerClass(Class class)
 	class->isa->dTable = class->isa->initDTable = emptyDTable;
 
 	if (strcmp(class->name, "Protocol") != 0)
-		classesCount++;
+		classCount++;
 }
 
 void
@@ -500,7 +500,7 @@ _objc_processClassLoadQueue(void)
 void
 _objc_registerAllClasses(struct objc_symtab *symtab)
 {
-	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
+	for (uint16_t i = 0; i < symtab->classDefCount; i++) {
 		Class class = (Class)symtab->defs[i];
 
 		registerClass(class);
@@ -508,7 +508,7 @@ _objc_registerAllClasses(struct objc_symtab *symtab)
 		registerSelectors(class->isa);
 	}
 
-	for (uint16_t i = 0; i < symtab->classDefsCount; i++) {
+	for (uint16_t i = 0; i < symtab->classDefCount; i++) {
 		Class class = (Class)symtab->defs[i];
 
 		if (hasLoad(class)) {
@@ -662,15 +662,15 @@ objc_getClassList(Class *buffer, unsigned int count)
 	_objc_globalMutex_lock();
 
 	if (buffer == NULL) {
-		count = classesCount;
+		count = classCount;
 
 		_objc_globalMutex_unlock();
 
 		return count;
 	}
 
-	if (classesCount < count)
-		count = classesCount;
+	if (classCount < count)
+		count = classCount;
 
 	j = 0;
 	for (uint32_t i = 0; i < classes->size; i++) {
@@ -709,11 +709,11 @@ objc_copyClassList(unsigned int *length)
 
 	_objc_globalMutex_lock();
 
-	if ((ret = malloc((classesCount + 1) * sizeof(Class))) == NULL)
+	if ((ret = malloc((classCount + 1) * sizeof(Class))) == NULL)
 		_OBJC_ERROR("Failed to allocate memory for class list!");
 
-	count = objc_getClassList(ret, classesCount);
-	if (count != classesCount)
+	count = objc_getClassList(ret, classCount);
+	if (count != classCount)
 		_OBJC_ERROR("Fatal internal inconsistency!");
 
 	ret[count] = Nil;
@@ -1045,7 +1045,7 @@ _objc_unregisterClass(Class class)
 	_objc_hashtable_delete(classes, class->name);
 
 	if (strcmp(class_getName(class), "Protocol") != 0)
-		classesCount--;
+		classCount--;
 
 	unregisterClass(class);
 	unregisterClass(class->isa);
@@ -1081,7 +1081,7 @@ _objc_unregisterAllClasses(void)
 		}
 	}
 
-	if (classesCount != 0)
+	if (classCount != 0)
 		_OBJC_ERROR("Fatal internal inconsistency!");
 
 	if (emptyDTable != NULL) {

@@ -28,7 +28,7 @@
 
 Class _objc_taggedPointerClasses[maxNumTaggedPointerClasses]
     OF_VISIBILITY_HIDDEN;
-static int taggedPointerClassesCount;
+static int taggedPointerClassCount;
 uintptr_t _objc_taggedPointerSecret OF_VISIBILITY_HIDDEN;
 
 void
@@ -44,12 +44,12 @@ objc_registerTaggedPointerClass(Class class)
 
 	_objc_globalMutex_lock();
 
-	if (taggedPointerClassesCount == maxNumTaggedPointerClasses) {
+	if (taggedPointerClassCount == maxNumTaggedPointerClasses) {
 		_objc_globalMutex_unlock();
 		return -1;
 	}
 
-	i = taggedPointerClassesCount++;
+	i = taggedPointerClassCount++;
 	_objc_taggedPointerClasses[i] = class;
 
 	_objc_globalMutex_unlock();

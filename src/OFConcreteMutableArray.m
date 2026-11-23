@@ -201,21 +201,21 @@
 {
 	void *pool = objc_autoreleasePoolPush();
 	const OFRange *ranges = indexes.of_ranges.items;
-	size_t rangesCount = indexes.of_ranges.count;
+	size_t rangeCount = indexes.of_ranges.count;
 	id const *objectsObjects = objects.objects;
-	size_t objectsCount = objects.count;
+	size_t objectCount = objects.count;
 	size_t objectsIndex = 0;
 	id *items = _array.mutableItems;
 	size_t count = _array.count;
 
-	if (objectsCount != indexes.count)
+	if (objectCount != indexes.count)
 		@throw [OFOutOfRangeException exception];
 
-	for (size_t i = 0; i < objectsCount; i++)
+	for (size_t i = 0; i < objectCount; i++)
 		if (objectsObjects[i] == self)
 			@throw [OFInvalidArgumentException exception];
 
-	for (size_t i = 0; i < rangesCount; i++) {
+	for (size_t i = 0; i < rangeCount; i++) {
 		if (OFEndOfRange(ranges[i]) > count)
 			@throw [OFOutOfRangeException exception];
 
@@ -333,17 +333,17 @@
 
 - (void)removeObjectsAtIndexes: (OFIndexSet *)indexes
 {
-	size_t indexesCount = indexes.count;
+	size_t indexCount = indexes.count;
 	const OFRange *ranges = indexes.of_ranges.items;
-	size_t rangesCount = indexes.of_ranges.count;
+	size_t rangeCount = indexes.of_ranges.count;
 	id const *objects = _array.items;
 	size_t count = _array.count;
 	size_t copyIndex = 0;
 	id *copy;
 
-	copy = OFAllocMemory(indexesCount, sizeof(*copy));
+	copy = OFAllocMemory(indexCount, sizeof(*copy));
 	@try {
-		for (size_t i = 0; i < rangesCount; i++) {
+		for (size_t i = 0; i < rangeCount; i++) {
 			if (OFEndOfRange(ranges[i]) > count)
 				@throw [OFOutOfRangeException exception];
 
@@ -356,7 +356,7 @@
 		[_array removeItemsAtIndexes: indexes];
 		_mutations++;
 
-		for (size_t i = 0; i < indexesCount; i++)
+		for (size_t i = 0; i < indexCount; i++)
 			objc_release(copy[i]);
 	} @finally {
 		OFFreeMemory(copy);

@@ -719,17 +719,17 @@ SIGNAL_HANDLER(SIGUSR2)
 	void *pool = objc_autoreleasePoolPush();
 	OFStringEncoding encoding = [OFLocale encoding];
 	OFArray OF_GENERIC(OFSandboxUnveilPath) *unveiledPaths;
-	size_t unveiledPathsCount;
+	size_t unveiledPathCount;
 	const char *promises;
 
 	if (_activeSandbox != nil && sandbox != _activeSandbox)
 		@throw [OFInvalidArgumentException exception];
 
 	unveiledPaths = sandbox.unveiledPaths;
-	unveiledPathsCount = unveiledPaths.count;
+	unveiledPathCount = unveiledPaths.count;
 
 	for (size_t i = sandbox->_unveiledPathsIndex;
-	    i < unveiledPathsCount; i++) {
+	    i < unveiledPathCount; i++) {
 		OFSandboxUnveilPath unveiledPath =
 		    [unveiledPaths objectAtIndex: i];
 		OFString *path = unveiledPath.firstObject;
@@ -745,7 +745,7 @@ SIGNAL_HANDLER(SIGUSR2)
 					       errNo: errno];
 	}
 
-	sandbox->_unveiledPathsIndex = unveiledPathsCount;
+	sandbox->_unveiledPathsIndex = unveiledPathCount;
 
 	promises = [sandbox.pledgeString cStringWithEncoding: encoding];
 
