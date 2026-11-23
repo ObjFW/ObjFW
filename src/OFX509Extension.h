@@ -39,6 +39,8 @@ OF_SUBCLASSING_RESTRICTED
 
 #ifdef OF_HAVE_CLASS_PROPERTIES
 @property (class, readonly, nonatomic) OFASN1ObjectIdentifier *keyUsageOID;
+@property (class, readonly, nonatomic)
+    OFASN1ObjectIdentifier *basicConstraintsOID;
 #endif
 
 /**
@@ -69,9 +71,14 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic) OFData *extensionValueData;
 
 /**
- * @brief The OID for the Key Usage extension.
+ * @brief The OID for the Key Usage Extension.
  */
 + (OFASN1ObjectIdentifier *)keyUsageOID;
+
+/**
+ * @brief The OID for the Basic Constraints Extension.
+ */
++ (OFASN1ObjectIdentifier *)basicConstraintsOID;
 @end
 
 OF_ASSUME_NONNULL_END

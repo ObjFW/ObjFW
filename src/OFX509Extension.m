@@ -24,6 +24,7 @@
 #import "OFArray.h"
 #import "OFData.h"
 #import "OFString.h"
+#import "OFX509BasicConstraints.h"
 #import "OFX509KeyUsage.h"
 
 #import "OFInvalidFormatException.h"
@@ -36,6 +37,11 @@
 + (OFASN1ObjectIdentifier *)keyUsageOID
 {
 	return [OFASN1ObjectIdentifier identifierWithString: @"2.5.29.15"];
+}
+
++ (OFASN1ObjectIdentifier *)basicConstraintsOID
+{
+	return [OFASN1ObjectIdentifier identifierWithString: @"2.5.29.19"];
 }
 
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
@@ -80,6 +86,14 @@
 
 			_extensionValue = objc_retain(
 			    [value parsedAs: [OFX509KeyUsage class]]);
+		} else if ([_extensionID isEqual:
+		    [OFX509Extension basicConstraintsOID]]) {
+			value = _extensionValueData.valueByParsingDER;
+			if (![value isKindOfClass: [OFASN1Sequence class]])
+				@throw [OFInvalidFormatException exception];
+
+			_extensionValue = objc_retain(
+			    [value parsedAs: [OFX509BasicConstraints class]]);
 		}
 
 		objc_autoreleasePoolPop(pool);

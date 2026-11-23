@@ -129,6 +129,7 @@
 #import "OFX500DistinguishedName.h"
 #import "OFX500RelativeDistinguishedName.h"
 #import "OFX509AlgorithmIdentifier.h"
+#import "OFX509BasicConstraints.h"
 #import "OFX509Certificate.h"
 #import "OFX509Extension.h"
 #import "OFX509KeyUsage.h"

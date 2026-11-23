@@ -140,6 +140,7 @@ SRCS = OFASN1BMPString.m			\
        OFX500DistinguishedName.m		\
        OFX500RelativeDistinguishedName.m	\
        OFX509AlgorithmIdentifier.m		\
+       OFX509BasicConstraints.m			\
        OFX509Certificate.m			\
        OFX509Extension.m			\
        OFX509KeyUsage.m				\
