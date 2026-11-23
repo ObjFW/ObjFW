@@ -26,6 +26,7 @@
 #import "OFPEMParser.h"
 
 #import "OFInvalidArgumentException.h"
+#import "OFInvalidFormatException.h"
 
 static void
 parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
@@ -39,8 +40,11 @@ parsePrivateKeyCallback(OFString *section, OFData *data, void *ctx)
 	if (*privateKey != nil)
 		@throw [OFInvalidArgumentException exception];
 
-	*privateKey =
-	    [data.valueByParsingDER parsedAs: [OFPKCS8PrivateKey class]];
+	OF_KINDOF(OFASN1Value *) value = data.valueByParsingDER;
+	if (![value isKindOfClass: [OFASN1Sequence class]])
+		@throw [OFInvalidFormatException exception];
+
+	*privateKey = [value parsedAs: [OFPKCS8PrivateKey class]];
 }
 
 @implementation OFPKCS8PrivateKey

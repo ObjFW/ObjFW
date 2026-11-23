@@ -73,10 +73,14 @@
 			@throw [OFInvalidFormatException exception];
 		_extensionValueData = objc_retain([value octets]);
 
-		if ([_extensionID isEqual: [OFX509Extension keyUsageOID]])
+		if ([_extensionID isEqual: [OFX509Extension keyUsageOID]]) {
+			value = _extensionValueData.valueByParsingDER;
+			if (![value isKindOfClass: [OFASN1BitString class]])
+				@throw [OFInvalidFormatException exception];
+
 			_extensionValue = objc_retain(
-			    [_extensionValueData.valueByParsingDER
-			    parsedAs: [OFX509KeyUsage class]]);
+			    [value parsedAs: [OFX509KeyUsage class]]);
+		}
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
