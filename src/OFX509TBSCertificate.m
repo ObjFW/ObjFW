@@ -22,6 +22,7 @@
 #import "OFASN1Integer.h"
 #import "OFArray.h"
 #import "OFData.h"
+#import "OFSet.h"
 #import "OFString.h"
 #import "OFX500DistinguishedName.h"
 #import "OFX509AlgorithmIdentifier.h"
@@ -158,20 +159,32 @@
 			if (![value isKindOfClass: [OFASN1Sequence class]])
 				@throw [OFInvalidFormatException exception];
 
-			if ([[value components] count] < 1)
+			OFArray *extComponents = [value components];
+			size_t extCount = extComponents.count;
+			if (extCount < 1)
 				@throw [OFInvalidFormatException exception];
 
-			OFMutableArray *extensions = [OFMutableArray
-			    arrayWithCapacity: [[value components] count]];
-			for (OF_KINDOF(OFASN1Value *) iter in
-			    [value components]) {
+			OFMutableSet *seenOIDs =
+			    [OFMutableSet setWithCapacity: extCount];
+			OFMutableArray *extensions =
+			    [OFMutableArray arrayWithCapacity: extCount];
+			for (OF_KINDOF(OFASN1Value *) iter in extComponents) {
 				if (![iter isKindOfClass:
 				    [OFASN1Sequence class]])
 					@throw [OFInvalidFormatException
 					    exception];
 
-				[extensions addObject:
-				    [iter parsedAs: [OFX509Extension class]]];
+				OFX509Extension *extension =
+				    [iter parsedAs: [OFX509Extension class]];
+				OFASN1ObjectIdentifier *OID =
+				    extension.extensionID;
+
+				if ([seenOIDs containsObject: OID])
+					@throw [OFInvalidFormatException
+					    exception];
+
+				[seenOIDs addObject: OID];
+				[extensions addObject: extension];
 			}
 			[extensions makeImmutable];
 			_extensions = objc_retain(extensions);
