@@ -51,6 +51,9 @@
 			value = [enumerator nextObject];
 		}
 
+		if (!_CA && value != nil)
+			@throw [OFInvalidFormatException exception];
+
 		if (value != nil &&
 		    ![value isKindOfClass: [OFASN1Integer class]])
 			@throw [OFInvalidFormatException exception];
