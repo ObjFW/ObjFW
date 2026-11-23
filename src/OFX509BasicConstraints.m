@@ -21,6 +21,7 @@
 #import "OFASN1Boolean.h"
 #import "OFASN1Integer.h"
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFString.h"
 
 #import "OFInvalidFormatException.h"
@@ -54,10 +55,16 @@
 		if (!_CA && value != nil)
 			@throw [OFInvalidFormatException exception];
 
-		if (value != nil &&
-		    ![value isKindOfClass: [OFASN1Integer class]])
-			@throw [OFInvalidFormatException exception];
-		_pathLengthConstraint = objc_retain(value);
+		if (value != nil) {
+			if (![value isKindOfClass: [OFASN1Integer class]])
+				@throw [OFInvalidFormatException exception];
+
+			if (*(unsigned char*)[[value DEREncodedContents]
+			    itemAtIndex: 0] & 0x80)
+				@throw [OFInvalidFormatException exception];
+
+			_pathLengthConstraint = objc_retain(value);
+		}
 
 		if ([enumerator nextObject] != nil)
 			@throw [OFInvalidFormatException exception];
