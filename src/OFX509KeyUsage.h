@@ -33,55 +33,55 @@ OF_SUBCLASSING_RESTRICTED
 }
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `digitalSignature`.
  */
 @property (readonly, nonatomic) bool digitalSignature;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `nonRepudiation`.
  */
 @property (readonly, nonatomic) bool nonRepudiation;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `keyEncipherment`.
  */
 @property (readonly, nonatomic) bool keyEncipherment;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `dataEncipherment`.
  */
 @property (readonly, nonatomic) bool dataEncipherment;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `keyAgreement`.
  */
 @property (readonly, nonatomic) bool keyAgreement;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `keyCertSign`.
  */
 @property (readonly, nonatomic) bool keyCertSign;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `cRLSign`.
  */
 @property (readonly, nonatomic) bool CRLSign;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `encipherOnly`.
  */
 @property (readonly, nonatomic) bool encipherOnly;
 
 /**
- * @brief Whether the key contained in the certificacte can be used for
+ * @brief Whether the key contained in the certificate can be used for
  *	  `decipherOnly`.
  */
 @property (readonly, nonatomic) bool decipherOnly;
