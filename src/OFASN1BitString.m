@@ -29,34 +29,34 @@
 #import "OFOutOfRangeException.h"
 
 @implementation OFASN1BitString
-+ (instancetype)bitStringWithBits: (OFData *)bits bitsCount: (size_t)bitsCount
++ (instancetype)bitStringWithBits: (OFData *)bits bitCount: (size_t)bitCount
 {
 	return objc_autoreleaseReturnValue(
-	    [[self alloc] initWithBits: bits bitsCount: bitsCount]);
+	    [[self alloc] initWithBits: bits bitCount: bitCount]);
 }
 
 + (instancetype)bitStringWithBits: (OFData *)bits
-			bitsCount: (size_t)bitsCount
+			bitCount: (size_t)bitCount
 			 tagClass: (OFASN1TagClass)tagClass
 			tagNumber: (OFASN1TagNumber)tagNumber
 {
 	return objc_autoreleaseReturnValue([[self alloc]
 	    initWithBits: bits
-	       bitsCount: bitsCount
+		bitCount: bitCount
 		tagClass: tagClass
 	       tagNumber: tagNumber]);
 }
 
-- (instancetype)initWithBits: (OFData *)bits bitsCount: (size_t)bitsCount
+- (instancetype)initWithBits: (OFData *)bits bitCount: (size_t)bitCount
 {
 	return [self initWithBits: bits
-			bitsCount: bitsCount
+			 bitCount: bitCount
 			 tagClass: OFASN1TagClassUniversal
 			tagNumber: OFASN1TagNumberBitString];
 }
 
 - (instancetype)initWithBits: (OFData *)bits
-		   bitsCount: (size_t)bitsCount
+		    bitCount: (size_t)bitCount
 		    tagClass: (OFASN1TagClass)tagClass
 		   tagNumber: (OFASN1TagNumber)tagNumber
 {
@@ -67,8 +67,8 @@
 		if (bits.itemSize != 1)
 			@throw [OFInvalidArgumentException exception];
 
-		size_t roundedUpLength = OFRoundUpToPowerOf2(8, bitsCount);
-		unsigned char unusedBits = roundedUpLength - bitsCount;
+		size_t roundedUpLength = OFRoundUpToPowerOf2(8, bitCount);
+		unsigned char unusedBits = roundedUpLength - bitCount;
 
 		size_t bytesCount = bits.count;
 		if (bytesCount != roundedUpLength / 8)
@@ -140,7 +140,7 @@
 	    OFMakeRange(1, _DEREncodedContents.count - 1)];
 }
 
-- (size_t)bitsCount
+- (size_t)bitCount
 {
 	unsigned char unusedBits =
 	    *(unsigned char *)[_DEREncodedContents itemAtIndex: 0];
@@ -155,7 +155,7 @@
 	    @"\tBits = %@\n"
 	    @">",
 	    self.class, OFASN1TagClassDescription(_tagClass),
-	    OFASN1TagNumberDescription(_tagClass, _tagNumber), self.bitsCount,
+	    OFASN1TagNumberDescription(_tagClass, _tagNumber), self.bitCount,
 	    self.bits];
 }
 @end

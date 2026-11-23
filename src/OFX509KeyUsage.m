@@ -36,16 +36,16 @@
 				       tagNumber: tagNumber];
 
 	@try {
-		size_t bitsCount = self.bitsCount;
-		if (bitsCount == 0 || bitsCount > 9)
+		size_t bitCount = self.bitCount;
+		if (bitCount == 0 || bitCount > 9)
 			@throw [OFInvalidFormatException exception];
 
 		OFData *bits = self.bits;
 		_keyUsage = *(uint8_t *)[bits itemAtIndex: 0] << 1;
-		if (bitsCount == 9)
+		if (bitCount == 9)
 			_keyUsage |= *(uint8_t *)[bits itemAtIndex: 1] >> 7;
 
-		if (!(_keyUsage & (0x100 >> (bitsCount - 1))))
+		if (!(_keyUsage & (0x100 >> (bitCount - 1))))
 			@throw [OFInvalidFormatException exception];
 	} @catch (id e) {
 		objc_release(self);

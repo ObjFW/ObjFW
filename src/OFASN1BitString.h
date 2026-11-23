@@ -39,30 +39,30 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief The number of bits in the BitString.
  */
-@property (readonly, nonatomic) size_t bitsCount;
+@property (readonly, nonatomic) size_t bitCount;
 
 /**
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
  * @param bits The value of the BitString
- * @param bitsCount The number of bits in the BitString
+ * @param bitCount The number of bits in the BitString
  * @return A new, autoreleased OFASN1BitString
  */
-+ (instancetype)bitStringWithBits: (OFData *)bits bitsCount: (size_t)bitsCount;
++ (instancetype)bitStringWithBits: (OFData *)bits bitCount: (size_t)bitCount;
 
 /**
  * @brief Creates an ASN.1 BitString with the specified BitString value and
  *	  length.
  *
  * @param bits The value of the BitString
- * @param bitsCount The number of bits in the BitString
+ * @param bitCount The number of bits in the BitString
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return A new, autoreleased OFASN1BitString
  */
 + (instancetype)bitStringWithBits: (OFData *)bits
-			bitsCount: (size_t)bitsCount
+			 bitCount: (size_t)bitCount
 			 tagClass: (OFASN1TagClass)tagClass
 			tagNumber: (OFASN1TagNumber)tagNumber;
 
@@ -71,23 +71,23 @@ OF_ASSUME_NONNULL_BEGIN
  *	  BitString value and length.
  *
  * @param bits The value of the BitString
- * @param bitsCount The number of bits in the BitString
+ * @param bitCount The number of bits in the BitString
  * @return An initialized OFASN1BitString
  */
-- (instancetype)initWithBits: (OFData *)bits bitsCount: (size_t)bitsCount;
+- (instancetype)initWithBits: (OFData *)bits bitCount: (size_t)bitCount;
 
 /**
  * @brief Initializes an already allocated ASN.1 BitString with the specified
  *	  BitString value and length.
  *
  * @param bits The value of the BitString
- * @param bitsCount The number of bits in the BitString
+ * @param bitCount The number of bits in the BitString
  * @param tagClass The tag class of the value's type
  * @param tagNumber The tag number of the value's type
  * @return An initialized OFASN1BitString
  */
 - (instancetype)initWithBits: (OFData *)bits
-		   bitsCount: (size_t)bitsCount
+		    bitCount: (size_t)bitCount
 		    tagClass: (OFASN1TagClass)tagClass
 		   tagNumber: (OFASN1TagNumber)tagNumber;
 @end

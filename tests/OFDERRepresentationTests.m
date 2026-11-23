@@ -50,18 +50,18 @@
 	OFData *bits = [OFData dataWithItems: "\xFF\x00\xF8" count: 3];
 	OTAssertEqualObjects([[OFASN1BitString
 	    bitStringWithBits: bits
-		    bitsCount: 21] DERRepresentation],
+		     bitCount: 21] DERRepresentation],
 	    [OFData dataWithItems: "\x03\x04\x03\xFF\x00\xF8" count: 6]);
 
 	bits = [OFData dataWithItems: "abcdefäöü" count: 12];
 	OTAssertEqualObjects([[OFASN1BitString
 	    bitStringWithBits: bits
-		    bitsCount: 12 * 8] DERRepresentation],
+		     bitCount: 12 * 8] DERRepresentation],
 	    [OFData dataWithItems: "\x03\x0D\x00" "abcdefäöü" count: 15]);
 
 	OTAssertEqualObjects([[OFASN1BitString
 	    bitStringWithBits: [OFData data]
-		    bitsCount: 0] DERRepresentation],
+		     bitCount: 0] DERRepresentation],
 	    [OFData dataWithItems: "\x03\x01\x00" count: 3]);
 }
 

@@ -124,13 +124,13 @@
 	bitString = [[OFData dataWithItems: "\x03\x01\x00"
 				     count: 3] valueByParsingDER];
 	OTAssertEqualObjects(bitString.bits, [OFData data]);
-	OTAssertEqual(bitString.bitsCount, 0);
+	OTAssertEqual(bitString.bitCount, 0);
 
 	bitString = [[OFData dataWithItems: "\x03\x0D\x01Hello World\x80"
 				     count: 15] valueByParsingDER];
 	OTAssertEqualObjects(bitString.bits,
 	    [OFData dataWithItems: "Hello World\x80" count: 12]);
-	OTAssertEqual(bitString.bitsCount, 95);
+	OTAssertEqual(bitString.bitCount, 95);
 
 	bitString = [[OFData dataWithItems: "\x03\x81\x80\x00xxxxxxxxxxxxxxxxxx"
 					    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -143,7 +143,7 @@
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 				   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 			    count: 127]);
-	OTAssertEqual(bitString.bitsCount, 127 * 8);
+	OTAssertEqual(bitString.bitCount, 127 * 8);
 }
 
 - (void)testInvalidBitStringFails
