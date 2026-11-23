@@ -55,10 +55,6 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
-		if (components.count < 2 || components.count > 3)
-			@throw [OFInvalidFormatException exception];
-
 		OFEnumerator *enumerator = [components objectEnumerator];
 
 		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
@@ -78,6 +74,9 @@
 		if (![value isKindOfClass: [OFASN1OctetString class]])
 			@throw [OFInvalidFormatException exception];
 		_extensionValueData = objc_retain([value octets]);
+
+		if ([enumerator nextObject] != nil)
+			@throw [OFInvalidFormatException exception];
 
 		if ([_extensionID isEqual: [OFX509Extension keyUsageOID]]) {
 			value = _extensionValueData.valueByParsingDER;

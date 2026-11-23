@@ -38,10 +38,6 @@
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
-		if (components.count != 2)
-			@throw [OFInvalidFormatException exception];
-
 		OFEnumerator *enumerator = [components objectEnumerator];
 
 		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
@@ -49,8 +45,12 @@
 			@throw [OFInvalidFormatException exception];
 		_attributeType = objc_retain(value);
 
-		value = [enumerator nextObject];
+		if ((value = [enumerator nextObject]) == nil)
+			@throw [OFInvalidFormatException exception];
 		_attributeValue = objc_retain(value);
+
+		if ([enumerator nextObject] != nil)
+			@throw [OFInvalidFormatException exception];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

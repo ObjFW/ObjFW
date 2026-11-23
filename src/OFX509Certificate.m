@@ -123,10 +123,6 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
-		if (components.count != 3)
-			@throw [OFInvalidFormatException exception];
-
 		OFEnumerator *enumerator = [components objectEnumerator];
 
 		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
@@ -145,6 +141,9 @@ parseCertificates(OFString *section, OFData *data, void *ctx)
 		if (![value isKindOfClass: [OFASN1BitString class]])
 			@throw [OFInvalidFormatException exception];
 		_signatureValue = objc_retain(value);
+
+		if ([enumerator nextObject] != nil)
+			@throw [OFInvalidFormatException exception];
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {

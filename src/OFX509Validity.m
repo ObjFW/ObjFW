@@ -56,10 +56,6 @@ X509UTCTimeToDate(OFASN1UTCTime *time_)
 
 	@try {
 		void *pool = objc_autoreleasePoolPush();
-
-		if (components.count != 2)
-			@throw [OFInvalidFormatException exception];
-
 		OFEnumerator *enumerator = [components objectEnumerator];
 
 		OF_KINDOF(OFASN1Value *) value = [enumerator nextObject];
@@ -82,6 +78,9 @@ X509UTCTimeToDate(OFASN1UTCTime *time_)
 
 			_notAfter = objc_retain([value dateValue]);
 		} else
+			@throw [OFInvalidFormatException exception];
+
+		if ([enumerator nextObject] != nil)
 			@throw [OFInvalidFormatException exception];
 
 		objc_autoreleasePoolPop(pool);
