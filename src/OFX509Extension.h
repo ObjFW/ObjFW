@@ -33,8 +33,13 @@ OF_SUBCLASSING_RESTRICTED
 {
 	OFASN1ObjectIdentifier *_extensionID;
 	bool _critical;
-	OFData *_extensionValue;
+	OFData *_extensionValueData;
+	OF_KINDOF(OFASN1Value *) _extensionValue;
 }
+
+#ifdef OF_HAVE_CLASS_PROPERTIES
+@property (class, readonly, nonatomic) OFASN1ObjectIdentifier *keyUsageOID;
+#endif
 
 /**
  * @brief The extnID of the Extension.
@@ -47,9 +52,26 @@ OF_SUBCLASSING_RESTRICTED
 @property (readonly, nonatomic, getter=isCritical) bool critical;
 
 /**
- * @brief The extnValue of the Extension.
+ * @brief The extnValue of the Extension for known extensions, otherwise `nil`.
+ *
+ * @note While the standard specifies the value always needs to be DER-encoded,
+ *	 in practice, there are extensions that don't encode the Extension
+ *	 value in DER (e.g. Yubico), in violation of the standard. Therefore,
+ *	 only known Extensions are parsed. To get the raw Extension value, use
+ *	 @ref extensionValueData instead.
  */
-@property (readonly, nonatomic) OFData *extensionValue;
+@property OF_NULLABLE_PROPERTY (readonly, nonatomic)
+    OF_KINDOF(OFASN1Value *) extensionValue;
+
+/**
+ * @brief The extnValue of the Extension as data.
+ */
+@property (readonly, nonatomic) OFData *extensionValueData;
+
+/**
+ * @brief The OID for the Key Usage extension.
+ */
++ (OFASN1ObjectIdentifier *)keyUsageOID;
 @end
 
 OF_ASSUME_NONNULL_END

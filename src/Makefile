@@ -142,6 +142,7 @@ SRCS = OFASN1BMPString.m			\
        OFX509AlgorithmIdentifier.m		\
        OFX509Certificate.m			\
        OFX509Extension.m			\
+       OFX509KeyUsage.m				\
        OFX509SubjectPublicKeyInfo.m		\
        OFX509TBSCertificate.m			\
        OFX509Validity.m				\

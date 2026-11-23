@@ -22,13 +22,21 @@
 #import "OFASN1ObjectIdentifier.h"
 #import "OFASN1OctetString.h"
 #import "OFArray.h"
+#import "OFData.h"
 #import "OFString.h"
+#import "OFX509KeyUsage.h"
 
 #import "OFInvalidFormatException.h"
 
 @implementation OFX509Extension
 @synthesize extensionID = _extensionID, critical = _critical;
+@synthesize extensionValueData = _extensionValueData;
 @synthesize extensionValue = _extensionValue;
+
++ (OFASN1ObjectIdentifier *)keyUsageOID
+{
+	return [OFASN1ObjectIdentifier identifierWithString: @"2.5.29.15"];
+}
 
 - (instancetype)initWithComponents: (OFArray OF_GENERIC(OF_KINDOF(
 					OFASN1Value *)) *)components
@@ -63,7 +71,12 @@
 
 		if (![value isKindOfClass: [OFASN1OctetString class]])
 			@throw [OFInvalidFormatException exception];
-		_extensionValue = objc_retain([value octets]);
+		_extensionValueData = objc_retain([value octets]);
+
+		if ([_extensionID isEqual: [OFX509Extension keyUsageOID]])
+			_extensionValue = objc_retain(
+			    [_extensionValueData.valueByParsingDER
+			    parsedAs: [OFX509KeyUsage class]]);
 
 		objc_autoreleasePoolPop(pool);
 	} @catch (id e) {
@@ -78,20 +91,27 @@
 {
 	objc_release(_extensionID);
 	objc_release(_extensionValue);
+	objc_release(_extensionValueData);
 
 	[super dealloc];
 }
 
 - (OFString *)description
 {
+	id extensionValue = [[_extensionValue description]
+	    stringByReplacingOccurrencesOfString: @"\n"
+				      withString: @"\n\t"];
+
 	return [OFString stringWithFormat:
 	    @"<%@ [%@ %@]:\n"
 	    @"\tExtension ID = %@\n"
 	    @"\tCritical = %@\n"
-	    @"\tExtension value = %@\n"
+	    @"\tExtension %@ = %@\n"
 	    @">",
 	    self.class, OFASN1TagClassDescription(_tagClass),
 	    OFASN1TagNumberDescription(_tagClass, _tagNumber), _extensionID,
-	    (_critical ? @"true" : @"false"), _extensionValue];
+	    (_critical ? @"true" : @"false"),
+	    (extensionValue != nil ? @"value" : @"value data"),
+	    (extensionValue != nil ? extensionValue : _extensionValueData)];
 }
 @end

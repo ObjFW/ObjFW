@@ -131,6 +131,7 @@
 #import "OFX509AlgorithmIdentifier.h"
 #import "OFX509Certificate.h"
 #import "OFX509Extension.h"
+#import "OFX509KeyUsage.h"
 #import "OFX509SubjectPublicKeyInfo.h"
 #import "OFX509TBSCertificate.h"
 #import "OFX509Validity.h"
