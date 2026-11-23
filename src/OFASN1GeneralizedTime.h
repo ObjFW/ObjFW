@@ -26,13 +26,12 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 GeneralizedTime.
  */
-OF_SUBCLASSING_RESTRICTED
-
 @interface OFASN1GeneralizedTime: OFPrimitiveASN1Value
 {
 	unsigned short _year;
 	unsigned char _month, _dayOfMonth, _hour, _minute, _second;
 	unsigned long long _nanosecond;
+	OF_RESERVE_IVARS(OFASN1GeneralizedTime, 4)
 }
 
 /**

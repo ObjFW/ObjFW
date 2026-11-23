@@ -26,8 +26,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 OctetString.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1OctetString: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1OctetString, 4)
+}
+
 /**
  * @brief The OctetString value.
  */

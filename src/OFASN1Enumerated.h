@@ -24,8 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 Enumerated.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Enumerated: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1Enumerated, 4)
+}
+
 /**
  * @brief The `long long` value of the Enumerated`
  *

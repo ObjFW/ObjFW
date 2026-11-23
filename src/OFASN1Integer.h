@@ -24,8 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 Integer.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Integer: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1Integer, 4)
+}
+
 /**
  * @brief The long long value of the Integer.
  *

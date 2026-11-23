@@ -27,8 +27,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 OBJECT IDENTIFIER.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1ObjectIdentifier: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1ObjectIdentifier, 4)
+}
+
 /**
  * @brief The arcs of the OBJECT IDENTIFIER.
  */

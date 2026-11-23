@@ -27,8 +27,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 RELATIVE-OID.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1RelativeOID: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1RelativeOID, 4)
+}
+
 /**
  * @brief The arcs of the RELATIVE-OID.
  */

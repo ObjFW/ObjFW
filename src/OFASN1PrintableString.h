@@ -27,8 +27,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 PrintableString.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1PrintableString: OFASN1TextString
+{
+	OF_RESERVE_IVARS(OFASN1PrintableString, 4)
+}
 @end
 
 @interface OFCharacterSet (ASN1PrintableStringCharacterSet)

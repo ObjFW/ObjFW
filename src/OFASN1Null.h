@@ -24,8 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief A class representing an ASN.1 Null.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Null: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1Null, 4)
+}
+
 /**
  * @brief Creates an ASN.1 Null.
  *

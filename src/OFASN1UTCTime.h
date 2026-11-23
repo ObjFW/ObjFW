@@ -24,12 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 UTCTime.
  */
-OF_SUBCLASSING_RESTRICTED
-
 @interface OFASN1UTCTime: OFPrimitiveASN1Value
 {
 	unsigned char _yearOfCentury, _month, _dayOfMonth, _hour, _minute;
 	unsigned char _second;
+	OF_RESERVE_IVARS(OFASN1UTCTime, 4)
 }
 
 /**

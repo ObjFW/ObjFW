@@ -27,8 +27,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 NumericString.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1NumericString: OFASN1TextString
+{
+	OF_RESERVE_IVARS(OFASN1NumericString, 4)
+}
 @end
 
 @interface OFCharacterSet (ASN1NumericStringCharacterSet)

@@ -24,8 +24,10 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 VisibleString.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1VisibleString: OFASN1TextString
+{
+	OF_RESERVE_IVARS(OFASN1VisibleString, 4)
+}
 @end
 
 OF_ASSUME_NONNULL_END

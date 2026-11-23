@@ -24,8 +24,11 @@ OF_ASSUME_NONNULL_BEGIN
 /**
  * @brief An ASN.1 Boolean.
  */
-OF_SUBCLASSING_RESTRICTED
 @interface OFASN1Boolean: OFPrimitiveASN1Value
+{
+	OF_RESERVE_IVARS(OFASN1Boolean, 4)
+}
+
 /**
  * @brief The value of the Boolean.
  */
